@@ -1,0 +1,50 @@
+# SemTrans Configuration
+
+# Model settings
+model:
+  base_model: "Qwen/Qwen2.5-Coder-7B-Instruct"
+  device: "cuda"  # or "cpu"
+  torch_dtype: "float16"  # or "float32"
+
+# Stage I: Execution Semantics Warm-up
+stage1:
+  lambda_weight: 1.0
+  num_epochs: 2
+  batch_size: 4
+  learning_rate: 2.0e-5
+  save_steps: 500
+  output_dir: "./models/stage1_warmup"
+
+# Stage II: Structured Reasoning
+stage2:
+  temperature: 0.2
+  max_length: 2048
+
+# Stage III: Self-Training
+stage3:
+  num_iterations: 5
+  t_low: 0.2
+  t_high: 0.8
+  k_exploration: 5
+  t_max_repair: 3
+  experience_replay_ratio: 0.1
+  batch_size: 4
+  learning_rate: 2.0e-5
+  num_epochs: 2
+  output_dir: "./models/self_training"
+
+# Data paths
+data:
+  pyx_dataset: "data/pyx_dataset.jsonl"
+  translation_tasks: "data/translation_tasks.jsonl"
+  test_set: "data/test_set.jsonl"
+
+# Evaluation
+evaluation:
+  benchmarks:
+    - "HumanEval-X"
+    - "TransCoder"
+    - "CodeNet"
+  metrics:
+    - "pass@1"
+    - "accuracy"
